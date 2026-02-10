@@ -1,42 +1,51 @@
 # 🏢 Sistema de Gestão de Condomínio - Exemplo de Clean Architecture
 
-Este projeto demonstra a implementação de um sistema de cadastro de taxas de condomínio utilizando **Arquitetura Hexagonal** (Ports and Adapters) e **Clean Code**.  
-O foco principal é a robustez do domínio e a pirâmide de testes.
+Este projeto demonstra a implementação de um sistema de cadastro de taxas de condomínio utilizando **Arquitetura Hexagonal** (Ports and Adapters) e princípios de **Clean Code**.  
+O foco principal é a **robustez do domínio**, **baixo acoplamento** e uma **pirâmide de testes bem definida**, priorizando testes de alto valor.
 
 ---
 
 ## 🏛️ Arquitetura
 
-O projeto é dividido em três camadas principais para garantir o desacoplamento:
+O projeto é dividido em três camadas principais para garantir desacoplamento, testabilidade e evolução sustentável:
 
 1. **Domain (Coração)** 🧠  
    Contém as entidades de negócio e as interfaces (portas).  
-   É código Java puro, sem dependências de frameworks.
+   É código Java puro, sem dependências de frameworks ou infraestrutura.
 
 2. **Application (Casos de Uso)** ⚙️  
-   Orquestra a lógica de negócio, conectando o domínio aos adaptadores externos.
+   Orquestra a lógica de negócio, coordenando o domínio e as portas de saída.  
+   Não conhece detalhes técnicos como banco de dados ou web.
 
 3. **Infrastructure (Adaptadores)** 🌍  
-   Implementa os detalhes técnicos, como persistência em banco de dados (JPA),  
-   controladores REST e tratamento de erros.
+   Implementa os detalhes técnicos, como persistência (JPA),  
+   controladores REST, configurações e integração com frameworks.
 
 ---
 
 ## 🧪 Pirâmide de Testes
 
-A qualidade do código é garantida por diferentes níveis de testes:
+A qualidade do código é garantida seguindo a **pirâmide de testes clássica**, priorizando testes rápidos, confiáveis e com alto retorno de valor.
 
 - **Testes Unitários (Domínio)**  
-  Validam as regras de negócio e restrições da entidade `TaxaCondominio`  
-  usando **JUnit 5** e **AssertJ**.
+  Validam regras de negócio e invariantes da entidade `TaxaCondominio`  
+  utilizando **JUnit 5** e **AssertJ**.  
+  São rápidos, determinísticos e independentes de infraestrutura.
 
 - **Testes de Serviço (Aplicação)**  
-  Utilizam **Mockito** para isolar a lógica de orquestração  
-  e verificar a interação com as portas de saída.
+  Utilizam **Mockito** para isolar dependências externas,  
+  garantindo que os casos de uso orquestrem corretamente o domínio  
+  e interajam com as portas de saída.
 
 - **Testes de Integração (Infraestrutura)**  
   Utilizam **Testcontainers** para subir um container Docker real com  
-  **PostgreSQL**, garantindo que o adaptador de banco de dados funcione perfeitamente.
+  **PostgreSQL**, validando a integração real com o banco de dados.
+
+> ⚠️ **Observação Importante**  
+> O tradicional teste `contextLoads()` com `@SpringBootTest` foi **intencionalmente removido**,  
+> pois não agrega valor significativo à estratégia de testes e pode causar  
+> instabilidade em ambientes de CI/CD.  
+> A confiabilidade do sistema é garantida por testes de domínio, serviço e integração.
 
 ---
 
@@ -45,7 +54,7 @@ A qualidade do código é garantida por diferentes níveis de testes:
 - **Java 23**
 - **Spring Boot 4.0.2**
 - **Spring Data JPA**
-- **PostgreSQL** (via Docker nos testes)
+- **PostgreSQL** (via Docker nos testes de integração)
 - **Testcontainers**
 - **Lombok**
 - **JUnit 5 & AssertJ**
@@ -58,13 +67,13 @@ A qualidade do código é garantida por diferentes níveis de testes:
 ### ✅ Pré-requisitos
 
 - **Java 23** instalado
-- **Docker** instalado (necessário para os testes de integração)
+- **Docker** instalado (necessário apenas para os testes de integração)
 
 ---
 
 ### ▶️ Rodar os testes
 
-Para executar a pirâmide de testes completa, utilize o comando:
+Para executar toda a pirâmide de testes, utilize:
 
 ```bash
 ./mvnw test
@@ -82,7 +91,7 @@ Para executar a pirâmide de testes completa, utilize o comando:
 
 ## 🔌 Endpoints Principais
 
-### 📌 Cadastrar nova taxa
+### 📌 Cadastrar nova taxa de condomínio
 
 **POST** `/taxas`
 
@@ -98,8 +107,8 @@ Para executar a pirâmide de testes completa, utilize o comando:
 #### Respostas
 
 * **201 Created**
-  Sucesso no cadastro.
+  Taxa cadastrada com sucesso.
 
 * **400 Bad Request**
   Erro de validação de regra de negócio
-  (ex: valor negativo).
+  (ex: valor negativo ou vencimento inválido).
