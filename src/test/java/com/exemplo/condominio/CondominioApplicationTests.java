@@ -1,11 +1,11 @@
 package com.exemplo.condominio;
 
+import com.exemplo.condominio.infrastructure.config.TestContainersConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import spring_clean_architecture_testing_example.TestcontainersConfiguration;
 
-@Import(TestcontainersConfiguration.class)
+@Import(TestContainersConfiguration.class)
 @SpringBootTest
 class CondominioApplicationTests {
 
